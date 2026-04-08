@@ -143,7 +143,7 @@ async def register(name:str=Form(...),file:UploadFile=File(...)):
     cv2.imwrite("resources/save_face.jpg",img)
     embedding=get_face_embedding(img)
     if embedding is not None:
-        face_db=load_face_database()
+        global face_db
         face_db[name]=embedding
         save_face_database(face_db)
         return {"message":"保存人脸成功"}
@@ -166,6 +166,20 @@ async def register(name:str=Form(...),file:UploadFile=File(...)):
 #     face_db=load_face_database()
 #     face_db[name]=embedding
 #     save_face_database(face_db)
+
+@app.get("/face_list")
+def face_list():
+    names=list(face_db.keys())
+    return {"names":names}
+
+@app.delete("/delete_face")
+def delete_face(name:str=Form(...)):
+    global face_db
+    if name not in face_db:
+        return {"error":f"人脸库中不存在'{name}'"}
+    del face_db[name]
+    save_face_database(face_db)
+    return {"message":f"已删除'{name}'"}
 
 @app.get("/recognize_test")
 def recognize_test():
