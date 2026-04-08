@@ -2,3 +2,4 @@ Utils/models/
 *.zip
 *.onnx
 *.pkl
+.codex
