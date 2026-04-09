@@ -24,7 +24,6 @@ app=FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -127,10 +126,13 @@ def recognize_face_by_embedding(embedding,threshold=0.6):
 @app.post("/recognize_by_file")
 async def recognize_by_file(file:UploadFile=File(...)):
     embedding=await get_face_embedding_by_file(file)
+    if isinstance(embedding,dict):
+        return embedding
     if embedding is not None:
         name,sim=recognize_face_by_embedding(embedding)
         print(f"识别结果:姓名:{name},相似度:{sim}")
         return {"name":f"{name}"}
+    return {"error":"未检测到人脸"}
 
 @app.post("/register")
 async def register(name:str=Form(...),file:UploadFile=File(...)):
@@ -147,6 +149,7 @@ async def register(name:str=Form(...),file:UploadFile=File(...)):
         face_db[name]=embedding
         save_face_database(face_db)
         return {"message":"保存人脸成功"}
+    return {"error":"未检测到人脸"}
 
 # @app.post("/save_face")
 # async def save_face(name,file:UploadFile=File(...)):

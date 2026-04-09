@@ -12,8 +12,8 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
   const modelLoadedRef=useRef(false);
   const detectionsRef=useRef<faceapi.FaceDetection[]>([]);
   const frameCounter=useRef(0);
-  const faceNameRef=useRef<string|null>(null);
-  const isRecognize=useRef(false);
+  const faceNameRef=useRef<Map<string,string>>(new Map());
+  const recognizingRef=useRef<Set<string>>(new Set());
 
   function waitForVideo():void {
     if (videoRef.current && videoRef.current.readyState >= 2) {
@@ -45,10 +45,12 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
             ctx.strokeStyle = 'lime';
             ctx.lineWidth = 2;
             ctx.strokeRect(transformedX, y, width, height);
-            if (faceNameRef.current) {
+            const key = posKey(x, y)
+            const name = faceNameRef.current.get(key)
+            if (name) {
               ctx.fillStyle = 'lime';
               ctx.font = '16px Arial';
-              ctx.fillText(faceNameRef.current, transformedX, y - 5);
+              ctx.fillText(name, transformedX, y - 5);
             }
           }
 
@@ -58,25 +60,39 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
               .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
               .then((detections) => {
                 detectionsRef.current = detections
-                if (detections.length>0&&!isRecognize.current) {
-                  isRecognize.current=true;
-                  for(let i=0;i<detections.length;i++){
-                    const {x,y,width,height}=detections[i].box;
+                const oldNames = faceNameRef.current
+                faceNameRef.current = new Map()
+                for (const det of detections) {
+                  const { x, y, width, height } = det.box;
+                  const key = posKey(x, y)
+                  const matched = findNearestKey(oldNames, x, y)
+                  if (matched) {
+                    faceNameRef.current.set(key, oldNames.get(matched)!)
+                  }
+                  if (!faceNameRef.current.get(key) && !recognizingRef.current.has(key)) {
+                    recognizingRef.current.add(key);
+                    const padSide=0.4;
+                    const padTop=0.8;
+                    const padBottom=0.5;
+                    const sx=Math.max(0,x-width*padSide/2);
+                    const sy=Math.max(0,y-height*padTop);
+                    const sw=Math.min(video.videoWidth-sx,width*(1+padSide));
+                    const sh=Math.min(video.videoHeight-sy,height*(1+padTop+padBottom));
                     const tempCanvas=document.createElement('canvas');
-                    tempCanvas.width=width;
-                    tempCanvas.height=height;
+                    tempCanvas.width=sw;
+                    tempCanvas.height=sh;
                     const tempCtx = tempCanvas.getContext('2d');
                     if (tempCtx) {
-                      tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height)
+                      tempCtx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh)
                       tempCanvas.toBlob((blob) => {
                         if (blob) {
-                          recongnizeFace(blob).finally(()=>{
-                            isRecognize.current=false;
-                          });
+                          recongnizeFace(blob, key);
                         }else{
-                          isRecognize.current=false;
+                          recognizingRef.current.delete(key);
                         }
                       }, 'image/jpeg')
+                    }else{
+                      recognizingRef.current.delete(key);
                     }
                   }
                 }
@@ -109,7 +125,22 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
     console.log('人脸检测模型加载完成')
   }
 
-  async function recongnizeFace(blob: Blob) {
+  function posKey(x: number, y: number): string {
+    return `${Math.round(x/50)}_${Math.round(y/50)}`
+  }
+
+  function findNearestKey(map: Map<string, string>, x: number, y: number): string | null {
+    const kx = Math.round(x/50), ky = Math.round(y/50)
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const key = `${kx+dx}_${ky+dy}`
+        if (map.has(key)) return key
+      }
+    }
+    return null
+  }
+
+  async function recongnizeFace(blob: Blob, key: string) {
     const formData = new FormData()
     formData.append('file', blob, 'face.jpg')
     try {
@@ -119,10 +150,12 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
       })
       const data = await res.json()
       if (data.name) {
-        faceNameRef.current = data.name
+        faceNameRef.current.set(key, data.name)
       }
     } catch (error) {
       console.error('识别失败', error)
+    } finally {
+      recognizingRef.current.delete(key)
     }
   }
 
