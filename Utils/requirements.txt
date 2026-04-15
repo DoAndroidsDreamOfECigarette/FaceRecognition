@@ -1,0 +1,18 @@
+# 人脸识别系统后端依赖
+
+# Web 框架
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+
+# 图像处理
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# 人脸识别
+insightface>=0.7.3
+
+# 数据序列化
+pickle5>=0.0.1
+
+# 类型提示
+typing-extensions>=4.5.0
