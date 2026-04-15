@@ -3,7 +3,3 @@ Utils/models/
 *.onnx
 *.pkl
 .codex
-data/
-*.db
-__pycache__/
-*.pyc
