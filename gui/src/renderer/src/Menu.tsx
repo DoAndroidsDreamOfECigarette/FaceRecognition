@@ -4,9 +4,11 @@ interface MenuProps {
   onStartCamera: () => void;
   onStartRegister: () => void;
   onStartDelete: () => void;
+  onStartLogs: () => void;
+  onStartStatistics: () => void;
 }
 
-function Menu({ onStartCamera, onStartRegister, onStartDelete }: MenuProps) {
+function Menu({ onStartCamera, onStartRegister, onStartDelete, onStartLogs, onStartStatistics }: MenuProps) {
   return (
     <div style={{
       display: 'flex',
@@ -138,6 +140,72 @@ function Menu({ onStartCamera, onStartRegister, onStartDelete }: MenuProps) {
           </div>
           <div style={{ fontSize: '13px', color: 'var(--ev-c-text-2)', lineHeight: '1.5' }}>
             查看已注册的人脸信息，删除不需要的记录
+          </div>
+        </div>
+
+        <div
+          onClick={onStartLogs}
+          style={{
+            width: '220px',
+            padding: '32px 24px',
+            borderRadius: '16px',
+            backgroundColor: 'var(--ev-c-black-soft)',
+            border: '1px solid var(--ev-c-gray-3)',
+            cursor: 'pointer',
+            textAlign: 'center',
+            transition: 'all 0.2s ease',
+            userSelect: 'none'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = '#22c55e'
+            e.currentTarget.style.transform = 'translateY(-4px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(34,197,94,0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'var(--ev-c-gray-3)'
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
+        >
+          <div style={{ fontSize: '40px', marginBottom: '16px' }}>&#128203;</div>
+          <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px', color: 'var(--ev-c-text-1)' }}>
+            识别记录
+          </div>
+          <div style={{ fontSize: '13px', color: 'var(--ev-c-text-2)', lineHeight: '1.5' }}>
+            查看历史识别记录，了解识别情况与相似度
+          </div>
+        </div>
+
+        <div
+          onClick={onStartStatistics}
+          style={{
+            width: '220px',
+            padding: '32px 24px',
+            borderRadius: '16px',
+            backgroundColor: 'var(--ev-c-black-soft)',
+            border: '1px solid var(--ev-c-gray-3)',
+            cursor: 'pointer',
+            textAlign: 'center',
+            transition: 'all 0.2s ease',
+            userSelect: 'none'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = '#f59e0b'
+            e.currentTarget.style.transform = 'translateY(-4px)'
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,158,11,0.15)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'var(--ev-c-gray-3)'
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
+        >
+          <div style={{ fontSize: '40px', marginBottom: '16px' }}>&#128200;</div>
+          <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px', color: 'var(--ev-c-text-1)' }}>
+            数据统计
+          </div>
+          <div style={{ fontSize: '13px', color: 'var(--ev-c-text-2)', lineHeight: '1.5' }}>
+            查看识别统计数据，了解整体识别情况
           </div>
         </div>
       </div>
