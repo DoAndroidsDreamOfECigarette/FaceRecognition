@@ -18,6 +18,7 @@ import uvicorn
 from config import API_HOST, API_PORT
 from routes import router
 from database import init_sqlite_db
+from face_model import get_face_model
 
 
 # ==================== 应用初始化 ====================
@@ -40,12 +41,18 @@ app.add_middleware(
 app.include_router(router, tags=["人脸识别"])
 
 
+# 启动时执行一次（避免重复打印）
+@app.on_event("startup")
+def on_startup():
+    init_sqlite_db()
+    print("正在加载人脸识别模型，请稍候...")
+    _ = get_face_model()
+    print("模型加载完成")
+
+
 # ==================== 启动 ====================
 
 if __name__ == '__main__':
-    # 初始化数据库
-    init_sqlite_db()
-
     print(f"=" * 40)
     print(f"人脸识别系统启动中...")
     print(f"API 地址: http://{API_HOST}:{API_PORT}")
@@ -56,5 +63,7 @@ if __name__ == '__main__':
         app,
         host=API_HOST,
         port=API_PORT,
-        log_level="info"
+        log_level="info",
+        workers=1,          # 限制单进程，避免重复加载
+        reload=False        # 禁用自动重载
     )

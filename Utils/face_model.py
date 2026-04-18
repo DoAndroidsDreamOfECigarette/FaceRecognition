@@ -23,14 +23,12 @@ class FaceModel:
 
     def _load_model(self) -> None:
         """加载 InsightFace 人脸分析模型"""
-        print("正在加载人脸识别模型...")
         self.model = insightface.app.FaceAnalysis(
             name=INSIGHTFACE_MODEL_NAME,
             root=INSIGHTFACE_MODEL_ROOT,
             providers=INSIGHTFACE_PROVIDERS
         )
         self.model.prepare(ctx_id=-1)  # -1 表示 CPU，0+ 表示 GPU ID
-        print("模型加载完成")
 
     def detect_faces(self, img: np.ndarray) -> List:
         """
