@@ -18,7 +18,7 @@ os.makedirs(RESOURCES_DIR, exist_ok=True)
 # InsightFace 模型配置
 INSIGHTFACE_MODEL_NAME = "buffalo_l"
 INSIGHTFACE_MODEL_ROOT = os.path.join(BASE_DIR, "Utils")
-INSIGHTFACE_PROVIDERS = ["CPUExecutionProvider"]  # 可改为 ["CUDAExecutionProvider"] 使用GPU
+INSIGHTFACE_PROVIDERS = ["CUDAExecutionProvider"]
 
 # 识别阈值
 RECOGNITION_THRESHOLD = 0.6

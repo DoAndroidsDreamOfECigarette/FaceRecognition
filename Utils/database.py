@@ -13,7 +13,7 @@ from config import FACE_DB_PATH, DB_PATH
 
 # ==================== 人脸特征库操作 ====================
 
-def load_face_database() -> Dict[str, any]:
+def load_face_database() -> Dict[str, any]: # type: ignore
     """
     加载人脸特征库
 
@@ -30,7 +30,7 @@ def load_face_database() -> Dict[str, any]:
         return {}
 
 
-def save_face_database(face_db: Dict[str, any]) -> None:
+def save_face_database(face_db: Dict[str, any]) -> None: # type: ignore
     """
     保存人脸特征库到文件
 

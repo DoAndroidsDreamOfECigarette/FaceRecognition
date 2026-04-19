@@ -1,10 +1,16 @@
 @import './base.css';
 
+html, body, #root {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   background-image: url('./wavy-lines.svg');
   background-size: cover;
   user-select: none;
@@ -31,7 +37,6 @@ code {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin-bottom: 80px;
 }
 
 .logo {
