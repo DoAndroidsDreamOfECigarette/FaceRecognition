@@ -13,16 +13,26 @@ from config import FACE_DB_PATH, DB_PATH
 
 # ==================== 人脸特征库操作 ====================
 
+# 人脸库缓存，避免每次识别都从文件加载
+_face_db_cache: Dict[str, any] = {} # type: ignore
+_face_db_cache_valid = False
+
+
 def load_face_database() -> Dict[str, any]: # type: ignore
     """
-    加载人脸特征库
+    加载人脸特征库（带缓存）
 
     Returns:
         Dict[str, numpy.ndarray]: 键为姓名，值为512维特征向量
     """
+    global _face_db_cache, _face_db_cache_valid
+    if _face_db_cache_valid:
+        return _face_db_cache
     if os.path.exists(FACE_DB_PATH):
         with open(FACE_DB_PATH, 'rb') as f:
             face_db = pickle.load(f)
+        _face_db_cache = face_db
+        _face_db_cache_valid = True
         print(f"[数据库] 成功加载人脸库，共录入 {len(face_db)} 人")
         return face_db
     else:
@@ -37,8 +47,11 @@ def save_face_database(face_db: Dict[str, any]) -> None: # type: ignore
     Args:
         face_db: 人脸数据库字典
     """
+    global _face_db_cache, _face_db_cache_valid
     with open(FACE_DB_PATH, 'wb') as f:
         pickle.dump(face_db, f)
+    _face_db_cache = face_db
+    _face_db_cache_valid = True
     print(f"[数据库] 人脸库已保存，当前共 {len(face_db)} 人")
 
 

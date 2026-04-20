@@ -7,3 +7,6 @@ data/
 *.db
 __pycache__/
 *.pyc
+*.jpg
+*.jpeg
+*.png
