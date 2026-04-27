@@ -94,9 +94,9 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
                   faceNameRef.current.set(key, oldNames.get(matched)!)
                 } else if (!recognizingRef.current.has(key) && !isInCooldown(key)) {
                   recognizingRef.current.add(key);
-                  const padSide=0.2;
-                  const padTop=0.3;
-                  const padBottom=0.2;
+                  const padSide=0.3;
+                  const padTop=0.5;
+                  const padBottom=0.3;
                   const sx=Math.max(0,bx-bw*padSide/2);
                   const sy=Math.max(0,by-bh*padTop);
                   const sw=Math.min(video.videoWidth-sx,bw*(1+padSide));
@@ -113,7 +113,7 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
                       }else{
                         recognizingRef.current.delete(key);
                       }
-                    }, 'image/jpeg')
+                    }, 'image/jpeg',0.9)
                   }else{
                     recognizingRef.current.delete(key);
                   }
@@ -157,7 +157,7 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
       modelBasePath: './human-models',
       backend: 'webgl',
       face: {
-        detector: { maxDetected: 10, minConfidence: 0.7, rotation: true },
+        detector: { maxDetected: 5, minConfidence: 0.5, rotation: true },
         description: { enabled: false },
         emotion: { enabled: false },
         iris: { enabled: false },
