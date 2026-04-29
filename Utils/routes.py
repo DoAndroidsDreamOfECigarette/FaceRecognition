@@ -5,6 +5,7 @@ API 路由模块 - 定义所有 FastAPI 接口
 import os
 import cv2
 import numpy as np
+import time
 from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form
 from typing import Optional
@@ -82,6 +83,8 @@ async def recognize_by_file(file: UploadFile = File(...)):
 
     返回识别出的姓名
     """
+    start_time = time.time()
+
     contents = await file.read()
     img = _decode_image(contents)
     if img is None:
@@ -97,15 +100,17 @@ async def recognize_by_file(file: UploadFile = File(...)):
     embedding = face_model.get_embedding(img)
 
     if embedding is None:
+        elapsed = round((time.time() - start_time) * 1000)
         log_recognize("未检测到人脸", 0.0, "unknown")
-        return {"error": "未检测到人脸"}
+        return {"error": "未检测到人脸", "elapsed_ms": elapsed}
 
     # 进行识别
     name, similarity = _recognize_by_embedding(embedding)
+    elapsed = round((time.time() - start_time) * 1000)
     log_recognize(name, similarity)
 
-    print(f"[识别] 姓名: {name}, 相似度: {similarity}")
-    return {"name": name, "similarity": similarity}
+    print(f"[识别] 姓名: {name}, 相似度: {similarity}, 耗时: {elapsed}ms")
+    return {"name": name, "similarity": similarity, "elapsed_ms": elapsed}
 
 
 # ==================== 注册接口 ====================
