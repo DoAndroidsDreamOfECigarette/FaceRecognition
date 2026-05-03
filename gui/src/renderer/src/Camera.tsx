@@ -222,7 +222,7 @@ const Camera: React.FC<CameraProps> = ({onBack}) => {
         faceNameRef.current.set(key, data.name)
         cooldownRef.current.set(key, Date.now())
       } else if (data.name === '未知') {
-        // 识别失败，不设置名字也不设置 cooldown，等待重试
+        faceNameRef.current.set(key, '未知')
       }
     } catch (error) {
       console.error('识别失败', error)
